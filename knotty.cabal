@@ -18,18 +18,6 @@ maintainer:         paritosh@hasura.io
 -- category:
 extra-source-files: CHANGELOG.md
 
-library
-    exposed-modules:  MyLib
-
-    -- Modules included in this library but not exported.
-    -- other-modules:
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
-    build-depends:    base ^>=4.14.1.0
-    hs-source-dirs:   src-lib
-    default-language: Haskell2010
-
 executable knotty
     main-is:          Main.hs
 
@@ -40,14 +28,6 @@ executable knotty
     -- other-extensions:
     build-depends:
         base ^>=4.14.1.0,
-        knotty
 
     hs-source-dirs:   src-exe
     default-language: Haskell2010
-
-test-suite knotty-test
-    default-language: Haskell2010
-    type:             exitcode-stdio-1.0
-    hs-source-dirs:   test
-    main-is:          MyLibTest.hs
-    build-depends:    base ^>=4.14.1.0
