@@ -1,55 +1,11 @@
 module Main where
 
-data Node a = Node {
-    val   :: a
-  , forwN :: Node a
-  , backN :: Node a
-} deriving (Show)
+import DL.Builder
+import DL.Types
+import Graph.Builder
+import Graph.Types
 
-data Graph a = Graph {
-    f :: Node a
-  , l  :: Node a
-} deriving (Show)
-
-mkGraph :: [a] -> Graph a
-mkGraph [] = error "empty list"
-mkGraph [x] =
-  let
-    node = Node {
-        val = x
-      , forwN = node
-      , backN = node
-    }
-  in
-    Graph {
-        f = node
-      , l = node
-    }
-mkGraph (x:(y:ys)) =
-  let
-    node = Node{
-        val = x
-      , forwN = second
-      , backN = lastN
-    }
-    (second, lastN) = buildNodes node node lastN y ys
-  in
-    Graph {
-        f = node
-      , l = lastN
-    }
-
-buildNodes :: Node a -> Node a -> Node a -> a -> [a] -> (Node a, Node a)
-buildNodes firstN justLastN lastN y [] =
-  let
-    node = Node {
-        val = y
-      , forwN = firstN
-      , backN = justLastN
-    }
-  in (node, node)
-
-{- 
+{-   Doubly connected Linked List
 
       1
     /   \
@@ -57,24 +13,32 @@ buildNodes firstN justLastN lastN y [] =
 
  -}
 
--- >>> take 20 $ flattenGraph $ mkGraph [1..10]
--- [1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10]
-buildNodes firstN justLastN lastN y (y2:ys) =
-  let
-    node = Node {
-        val = y
-      , forwN = nextN
-      , backN = justLastN
-    }
-    (nextN, lastN) = buildNodes firstN node lastN y2 ys
-  in (node, lastN)
+-- >>> take 10 $ flattenDL $ mkDL [1..3]
+-- [1,2,3,1,2,3,1,2,3,1]
 
-flattenGraph :: Graph a -> [a]
-flattenGraph = getAllNext . f
+{-  Graph
 
-getAllNext :: Node a -> [a]
-getAllNext n = val n : getAllNext (forwN n)
+              1
+            /   \         => [1,2,3] [(1,2),(2,3),(3,1)]
+          3 ----- 2
+
+-}
+-- >>> fmap (\n -> edges n) $ allNodes (mkGraphWithEdges [1,2,3] [(1,2),(2,3),(3,1)])
+-- [[2,3],[1,3],[2,1]]
+
+{- 
+      1-----2-----3-----4
+      |     |     |     | => [1..8] [(1,2),(2,3),(3,4),(1,5),(2,6),(3,7),(4,8),(5,6),(6,7),(7,8)]
+      |     |     |     |
+      5-----6-----7-----8
+
+-}
+
+-- >>> fmap (\n -> (n,edges n)) $ allNodes $ mkGraphWithEdges [1..8] [(1,2),(2,3),(3,4),(1,5),(2,6),(3,7),(4,8),(5,6),(6,7),(7,8)]
+-- [(1,[2,5]),(2,[1,3,6]),(3,[2,4,7]),(4,[3,8]),(5,[1,6]),(6,[2,5,7]),(7,[3,6,8]),(8,[4,7])]
+
 
 main :: IO ()
 main = do
-  print $ take 20 $ flattenGraph $ mkGraph [1..10]
+  print $ take 10 $ flattenDL $ mkDL [1..4]
+  print $ fmap (\n -> (n,edges n)) $ allNodes $ mkGraphWithEdges [1..8] [(1,2),(2,3),(3,4),(1,5),(2,6),(3,7),(4,8),(5,6),(6,7),(7,8)]

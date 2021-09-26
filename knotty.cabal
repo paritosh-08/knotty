@@ -26,8 +26,16 @@ executable knotty
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-    build-depends:
-        base ^>=4.14.1.0,
+    build-depends:    base ^>=4.14.1.0
+                    , knotty
 
     hs-source-dirs:   src-exe
     default-language: Haskell2010
+
+library
+    hs-source-dirs:   src-lib
+    exposed-modules:  DL.Types
+                    , DL.Builder
+                    , Graph.Types
+                    , Graph.Builder
+    build-depends:    base ^>=4.14.1.0
